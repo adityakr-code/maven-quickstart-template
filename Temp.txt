@@ -1,48 +1,98 @@
 
-package com.company.automation.smoke;
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-import io.appium.java_client.windows.WindowsDriver;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+    <modelVersion>4.0.0</modelVersion>
 
-import java.net.URL;
+    <groupId>com.company.automation</groupId>
+    <artifactId>automation-framework</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
 
-public class DesktopSmokeTest {
+    <properties>
+        <maven.compiler.release>17</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    @Test
-    public void shouldLaunchWindowsNotepad() throws Exception {
-        WindowsDriver driver = null;
+        <selenium.version>4.35.0</selenium.version>
+        <appium.version>9.5.0</appium.version>
+        <testng.version>7.11.0</testng.version>
+        <slf4j.version>2.0.17</slf4j.version>
+        <logback.version>1.5.18</logback.version>
+        <allure.version>2.29.1</allure.version>
+    </properties>
 
-        try {
-            DesiredCapabilities capabilities =
-                    new DesiredCapabilities();
+    <dependencies>
+        <!-- Web automation -->
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>${selenium.version}</version>
+        </dependency>
 
-            capabilities.setCapability("platformName", "Windows");
-            capabilities.setCapability("deviceName", "WindowsPC");
-            capabilities.setCapability(
-                    "app",
-                    "C:\\Windows\\System32\\notepad.exe"
-            );
+        <!-- Windows desktop automation through Appium -->
+        <dependency>
+            <groupId>io.appium</groupId>
+            <artifactId>java-client</artifactId>
+            <version>${appium.version}</version>
+        </dependency>
 
-            driver = new WindowsDriver(
-                    new URL("http://127.0.0.1:4723"),
-                    capabilities
-            );
+        <!-- Test framework -->
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
+            <scope>test</scope>
+        </dependency>
 
-            String title = driver.getTitle();
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
 
-            System.out.println("Notepad window title: " + title);
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
 
-            Assert.assertTrue(
-                    title.toLowerCase().contains("notepad"),
-                    "Notepad did not launch as expected: " + title
-            );
+        <!-- Test reports -->
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-testng</artifactId>
+            <version>${allure.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
-        } finally {
-            if (driver != null) {
-                driver.quit();
-            }
-        }
-    }
-}
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.14.0</version>
+                <configuration>
+                    <release>${maven.compiler.release}</release>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.3</version>
+                <configuration>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>testng.xml</suiteXmlFile>
+                    </suiteXmlFiles>
+                    <systemPropertyVariables>
+                        <environment>${env}</environment>
+                        <browser>${browser}</browser>
+                        <execution.target>${executionTarget}</execution.target>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
